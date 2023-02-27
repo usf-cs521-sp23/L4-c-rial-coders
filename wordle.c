@@ -22,11 +22,6 @@
 
 int generate_wordlist()
 {
-    // 1. Find out who is playing the game
-    // 2. Open a text file with words to use (maybe in /usr/share/dict ?)
-    //    - Make a word list from those words (only 5 letters, no special chars)
-    //    - Count the number of words in the word file
-
     FILE *dict = fopen("/usr/share/dict/words", "r");
     if (dict == NULL) {
         perror("fopen");
@@ -53,9 +48,6 @@ int generate_wordlist()
 char* generate_new_word(int num_of_words) 
 {
     srand(time(NULL));
-    // 3. Pick one word randomly
-    //      - Generate a random number between 1 and the number of lines in words.txt
-    //      - Pick the word based on the random number that is generated from last step
     int r = rand() % (num_of_words + 1);
     printf("random number is %d\n", r);
 
@@ -86,30 +78,28 @@ char* generate_new_word(int num_of_words)
 
 int main(void) 
 {
-    bool keep_playing = true;
     int num_of_words = generate_wordlist();
-    printf("number of words is %d\n", num_of_words);
+    
+    char name[20];
+    printf("--- Welcome to Wordle ---\n");
+    printf("Enter your name: ");
+    scanf("%s", name);
+    bool win = false;
 
-
-    // 4. Read guesses on standard input (stdin) -- but only give them 6 chances
-    //    - Check if it's actually a valid word, no uppercase, punctuation
-    //    - Check if the letter is in the right spot, or at least in the word
-
-    while (keep_playing)
+    while (true)
     {
         char *target = generate_new_word(num_of_words);
         printf("target is %s\n", target);
-        printf("target length: %lu\n",strlen(target));
 
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 6; i > 0; i--) {
             char guess[100];
+            printf("You have %d attempt(s) left.\n", i);
             printf("Enter your guess: ");
             scanf("%s", guess);
-            printf("guess length: %lu\n",strlen(guess));
-
 
             if (strlen(guess) != 5) {
-                printf("That is not 5 characters.\n");
+                printf("That is not 5 characters. Please try again.\n");
+                i++;
                 continue;
             }
             
@@ -123,17 +113,20 @@ int main(void)
                     printf("x");
                 }
             }
-
             puts("");
 
             if (strncmp(target, guess, 5) == 0) {
-                printf("You win!\n");
+                win = true;
                 break;
             }
         }
-
+        if (win) {
+            printf("You're a winner, %s!\n", name);
+        } else {
+            printf("You lose, %s!\n", name);
+        }
         char user_input[5];
-        printf("%s", "Would you like to play again?\n");
+        printf("%s", "Would you like to play again? (y/n)\n");
         scanf("%s", user_input);
         if (strcmp(user_input, "y")) 
         {
