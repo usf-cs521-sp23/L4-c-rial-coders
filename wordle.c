@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h> //included for toLower function
 
 /*
     1. Find out who is playing the game
@@ -39,7 +40,7 @@ int generate_wordlist()
     char line[500];
     int num_of_words = 0;
     while (fgets(line, 500, file) != NULL) {
-        if (strlen(line) == 6 && strstr(line, "'") == NULL && strstr(line, "é") == NULL) {
+        if (strlen(line) == 6 && strstr(line, "'") == 0 && strstr(line, "é") == NULL) {
             fputs(line, file1);
             num_of_words++;
         }
@@ -58,96 +59,86 @@ char* generate_new_word(int num_of_words)
     int r = rand() % (num_of_words + 1);
     printf("random number is %d\n", r);
 
-    FILE *file3 = fopen("./words.txt", "r");
-    if (file3 == NULL) {
+    FILE *file = fopen("./words.txt", "r");
+    if (file == NULL) {
         perror("fopen");
     }
 
-    char line[6];
-    char *word = (char*) malloc(6);
-    while (r > 0) {
-        word = fgets(line, 6, file3);
-        r--;
-    }
-    printf("random word is %s\n", word);
-    
-    fclose(file3);
+    char line[7];
+    char *word = NULL;
 
+    for (int i = r; i > 0; i--) {
+        fgets(line, sizeof(line), file);
+    }
+    fclose(file);
+
+    //replace newline char with null char
+    line[strcspn(line, "\n")] = '\0';
+    word = malloc(strlen(line) + 1);
+    strcpy(word, line);
+    word[0] = tolower(word[0]);
+
+    printf("random word is %s\n", word);
     return word;
 }
 
+
+
 int main(void) 
 {
-    
-    bool is_play_again = true;
-    int num_of_chances = 6;
-
+    bool keep_playing = true;
     int num_of_words = generate_wordlist();
-    // printf("number of words is %d\n", num_of_words);
+    printf("number of words is %d\n", num_of_words);
 
-    char *target = generate_new_word(num_of_words);
-    printf("target is %s\n", target);
 
     // 4. Read guesses on standard input (stdin) -- but only give them 6 chances
     //    - Check if it's actually a valid word, no uppercase, punctuation
     //    - Check if the letter is in the right spot, or at least in the word
-    while (is_play_again && num_of_chances > 0){
-        char guess[100];
-        char is_play[2];
-        printf("Enter your guess: ");
-        scanf("%s", guess);
 
-        if (strlen(guess) > 5) {
-            printf("Word exeeds 5 character limits.\n");
-            continue;
-        }
+    while (keep_playing)
+    {
+        char *target = generate_new_word(num_of_words);
+        printf("target is %s\n", target);
+        printf("target length: %lu\n",strlen(target));
 
-        if (strlen(guess) < 5) {
-            printf("Word is less than 5 characters. \n");
-            continue;
-        }
+        for (int i = 0; i < 6; ++i) {
+            char guess[100];
+            printf("Enter your guess: ");
+            scanf("%s", guess);
+            printf("guess length: %lu\n",strlen(guess));
 
-        // 5. Let user know which letters have already been used
-        //    - Track which letters were wrong
-        printf("                : ");
-        for (int j = 0; j< 5; j++) {
-            if (target[j] == guess[j]) {
-                printf("o");
-            } else if (strchr(target, guess[j]) == NULL) {
-                printf("a");
-            } else {
-                printf("x");
+
+            if (strlen(guess) != 5) {
+                printf("That is not 5 characters.\n");
+                continue;
             }
-            if (j == 4) {
-                printf("\n");
-            }
-        }
-
-        // 6. Have some way of showing what was right/wrong, how many times guessed, how many left
-        num_of_chances--;
-        if (strcmp(target, guess) == 0) {
-            printf("YOU WIN!\n");
-            printf("Do you wanna play again? (y/n)");
-            scanf("%s", is_play);
-            if (strcmp(is_play, "y") == 0) {
-                is_play_again = true;
-                num_of_chances = 6;
-            } else {
-                is_play_again= false;
-            }
-        } else {
-            if (num_of_chances == 0) {
-                printf("You have no chance left, do you wanna play again? (y/n)");
-                scanf("%s", is_play);
-                if (strcmp(is_play, "y") == 0) {
-                    is_play_again = true;
+            
+            printf("                  ");
+            for (int j = 0; j < 5; j++) {
+                if (target[j] == guess[j]) {
+                    printf("o");
+                } else if (strchr(target, guess[j]) != NULL) {
+                    printf("a");
                 } else {
-                    is_play_again = false;
+                    printf("x");
                 }
-            } else {
-                printf("You have %d chances left\n", num_of_chances);
             }
-        }        
+
+            puts("");
+
+            if (strncmp(target, guess, 5) == 0) {
+                printf("You win!\n");
+                break;
+            }
+        }
+
+        char user_input[5];
+        printf("%s", "Would you like to play again?\n");
+        scanf("%s", user_input);
+        if (strcmp(user_input, "y")) 
+        {
+            break;
+        }
     }
-    free(target);
+
 }
