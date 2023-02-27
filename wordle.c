@@ -27,26 +27,26 @@ int generate_wordlist()
     //    - Make a word list from those words (only 5 letters, no special chars)
     //    - Count the number of words in the word file
 
-    FILE *file = fopen("/usr/share/dict/words", "r");
-    if (file == NULL) {
+    FILE *dict = fopen("/usr/share/dict/words", "r");
+    if (dict == NULL) {
         perror("fopen");
     }
 
-    FILE *file1 = fopen("./words.txt", "w");
-    if (file1 == NULL) {
+    FILE *words = fopen("./words.txt", "w");
+    if (words == NULL) {
         perror("fopen");
     }
 
     char line[500];
     int num_of_words = 0;
-    while (fgets(line, 500, file) != NULL) {
+    while (fgets(line, 500, dict) != NULL) {
         if (strlen(line) == 6 && strstr(line, "'") == 0 && strstr(line, "é") == NULL) {
-            fputs(line, file1);
+            fputs(line, words);
             num_of_words++;
         }
     }
-    fclose(file);
-    fclose(file1);
+    fclose(dict);
+    fclose(words);
     return num_of_words;
 }
 
