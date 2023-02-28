@@ -77,12 +77,20 @@ char* generate_new_word(int num_of_words)
 int main(void) 
 {
     int num_of_words = generate_wordlist();
+
+    int total_plays = 1;
+    int num_of_wins = 0;
+    int num_of_losses = 0;
+    FILE *stats = fopen("stats.txt", "w");
     
     char name[20];
     printf("--- Welcome to Wordle ---\n");
     printf("Enter your name: ");
     scanf("%s", name);
+    fprintf(stats, "User: %s\n", name);
+
     bool win = false;
+    // char letters[100];
 
     while (true)
     {
@@ -99,6 +107,13 @@ int main(void)
                 i++;
                 continue;
             }
+
+            // for (int j = 0; j < 5; j++) {
+            //     if (strchr(letters, guess[i]) == NULL) {
+            //         strcat(letters, guess[j]);
+            //     }
+            // }
+            // printf("Used letters: %s\n", letters);
             
             printf("                  ");
             for (int j = 0; j < 5; j++) {
@@ -124,17 +139,23 @@ int main(void)
             }
         }
         if (win) {
+            num_of_wins++;
             printf("You're a winner, %s!\n", name);
         } else {
+            num_of_losses++;
             printf("%s, you loser, the word was %s!\n", name, target);
         }
         char user_input[5];
         printf("%s", "Would you like to play again? (y/n)\n");
         scanf("%s", user_input);
-        if (strcmp(user_input, "y")) 
-        {
+        if (strcmp(user_input, "y") == 0) {
+            total_plays++;
+        } else {
+            fprintf(stats, "Total time of play: %d\n", total_plays);
+            fprintf(stats, "Number of wins: %d\n", num_of_wins);
+            fprintf(stats, "Number of losses: %d\n", num_of_losses);
             break;
         }
     }
-
+    fclose(stats);
 }
