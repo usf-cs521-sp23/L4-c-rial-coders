@@ -106,11 +106,17 @@ int main(void)
             printf("                  ");
             for (int j = 0; j < 5; j++) {
                 if (target[j] == guess[j]) {
-                    printf("o");
+                    printf("\033[0;32m");
+                    printf("%c", guess[j]);
+                    printf("\033[0m"); 
                 } else if (strchr(target, guess[j]) != NULL) {
-                    printf("a");
+                    printf("\033[0;33m");
+                    printf("%c", guess[j]);
+                    printf("\033[0m"); 
                 } else {
-                    printf("x");
+                    printf("\033[0;31m");
+                    printf("%c", guess[j]);
+                    printf("\033[0m"); 
                 }
             }
             puts("");
