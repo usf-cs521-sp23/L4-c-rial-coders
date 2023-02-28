@@ -49,7 +49,6 @@ char* generate_new_word(int num_of_words)
 {
     srand(time(NULL));
     int r = rand() % (num_of_words + 1);
-    printf("random number is %d\n", r);
 
     FILE *file = fopen("./words.txt", "r");
     if (file == NULL) {
@@ -70,7 +69,6 @@ char* generate_new_word(int num_of_words)
     strcpy(word, line);
     word[0] = tolower(word[0]);
 
-    printf("random word is %s\n", word);
     return word;
 }
 
@@ -89,7 +87,6 @@ int main(void)
     while (true)
     {
         char *target = generate_new_word(num_of_words);
-        printf("target is %s\n", target);
 
         for (int i = 6; i > 0; i--) {
             char guess[100];
@@ -129,7 +126,7 @@ int main(void)
         if (win) {
             printf("You're a winner, %s!\n", name);
         } else {
-            printf("You lose, %s!\n", name);
+            printf("%s, you loser, the word was %s!\n", name, target);
         }
         char user_input[5];
         printf("%s", "Would you like to play again? (y/n)\n");
