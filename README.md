@@ -1,4 +1,17 @@
-# Wordle!
+# Lab 4: Wordle
 
-See here: https://www.cs.usfca.edu/~mmalensek/cs521/assignments/wordle.html
+The lab is to create command line program that emulates wordle game
+
+
+
+## Building
+
+Run `make`
+
+## Running + Example Usage
+
+```
+./wordle
+```
+
 
