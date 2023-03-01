@@ -72,8 +72,6 @@ char* generate_new_word(int num_of_words)
     return word;
 }
 
-
-
 int main(void) 
 {
     int num_of_words = generate_wordlist();
@@ -89,11 +87,12 @@ int main(void)
     scanf("%s", name);
     fprintf(stats, "User: %s\n", name);
 
-    bool win = false;
-    // char letters[100];
+    char letters[100];
+    int counter = 0;
 
     while (true)
     {
+        bool win = false;
         char *target = generate_new_word(num_of_words);
 
         for (int i = 6; i > 0; i--) {
@@ -108,12 +107,13 @@ int main(void)
                 continue;
             }
 
-            // for (int j = 0; j < 5; j++) {
-            //     if (strchr(letters, guess[i]) == NULL) {
-            //         strcat(letters, guess[j]);
-            //     }
-            // }
-            // printf("Used letters: %s\n", letters);
+            for (int j = 0; j < 5; j++) {
+                if (strchr(letters, guess[j]) == NULL) {
+                    letters[counter] = guess[j];
+                    counter += 1;
+                }
+            }
+            printf("Used letters: %s\n", letters);
             
             printf("                  ");
             for (int j = 0; j < 5; j++) {
@@ -156,6 +156,7 @@ int main(void)
             fprintf(stats, "Number of losses: %d\n", num_of_losses);
             break;
         }
+    free(target);
     }
     fclose(stats);
 }
